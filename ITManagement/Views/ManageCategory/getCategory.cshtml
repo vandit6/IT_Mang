@@ -1,0 +1,259 @@
+﻿@model ITManagement.Models.Categories
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+@{
+    ViewData["Title"] = "ManageCategoryController";
+}
+@if (TempData.ContainsKey("DisplayAlert") && (bool)TempData["DisplayAlert"])
+{
+    <script>alert('This category exists in the Manage devices page. You need to delete it from there first.');</script>
+}
+
+<style>
+
+
+
+    .table {
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .head {
+        font-family: cursive;
+        font-size: 45px;
+        font-weight: 700;
+         /* Soft blue-grey color */
+        /* Add any additional styles you prefer */
+    }
+
+
+    .btn {
+        background-color: rgb(240,240,240);
+        color: black;
+        border-radius: 5px;
+        padding: 8px 16px;
+        margin-bottom: 6px;
+        transition: background-color 0.3s ease;
+        border: 1px solid #D0D0D0;
+    }
+
+
+
+
+    /* Updated Table Styles */
+    .table {
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .table th, .table td {
+            border: 1px solid #ddd; /* Add borders to table cells */
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9; /* Alternating row color */
+        }
+    /* Updated Modal Styles */
+    .modal-header {
+        background-color: #3498db; /* Modal header color */
+        color: #fff;
+    }
+</style>
+
+<h1 class="head text-center" style="text-align:center"> Categories</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn AddButton btn-primary " data-toggle="modal" data-target="#CreateModal">
+                <i class="fa fa-plus btn-icon"></i> Add Category
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-stripe table-bordered">
+                <thead>
+                    <tr class="info">
+                        <th>Category Name</th>
+                        <th style="text-align: end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.categories)
+                    {
+                        if (item.Isarchived == true)
+                        {
+                            continue;
+                        }
+                        <tr>
+                            <td class="data">@item.CategoryName</td>
+                            <td style="text-align: end">
+                                <button class="btn  btn-primary" onclick="openEditModal('@item.CategoryName', '@item.CategoryId')">
+                                    <i class="fa fa-pencil btn-icon"></i> Edit
+                                </button>
+                                <form method="post" asp-action="DeleteCategory" class="deleteCategory" style="display: inline; color: white">
+
+                                    <input type="hidden" asp-for="CategoryId" name="deleteCategoryId" id="deleteCategoryId" value="@item.CategoryId" />
+                                    <button class="btn  btn-primary">
+                                        <i class="fa fa-trash btn-icon"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if (TempData.ContainsKey("DisplayAlert") && (bool)TempData["DisplayAlert"])
+    {
+        <script>alert('This category is allotted with a device. Delete it from the device and then continue.');</script>
+    }
+
+
+
+</div>
+<form method="post" id="CreateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CreateModalLabel" aria-hidden="true" onclick="hideErrorBox()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 class="modal-title" id="CreateModalLabel">Add Category</h2>
+            </div>
+            <div class="modal-body">
+                <label class="control-label"></label>
+                <input type="text" placeholder="Category Name" style="width:100%; padding:7px" id="AddCategoryName" />
+
+                <div id="addErrorAlert" class="alert alert-danger" role="alert" style="display: none; margin-top: 10px;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-10 text-right">
+                    <button type="button" class="btn btn-primary" id="addSubmitBtn" style="margin-right:-20px">Add</button>
+                </div>
+                <div class="col-md-1 text-left">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:#BB3F3F; color:white" id="addCloseBtn">Close</button>
+                </div>
+            </div>
+
+
+
+
+            @*<div class="modal-footer">
+            <button type="button" id="addSubmitBtn" class="btn btn-primary">Add</button>
+            <button type="button" class="btn btn-secondary"   id="addSubmitBtn">Add</button>
+
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:#BB3F3F; color:white" id="addCloseBtn">Close</button>
+
+        </div>*@
+        </div>
+    </div>
+</form>
+
+<script>
+    document.getElementById('addSubmitBtn').addEventListener('click', function () {
+        var category = document.getElementById('AddCategoryName').value;
+
+        $.ajax({
+            type: "POST",
+            url: '/ManageCategory/CreateCategory',
+            data: { category: category },
+            success: function (data) {
+                if (data.errorMessage) {
+                    var errorMessage = data.errorMessage;
+                    var errorBox = document.getElementById('addErrorAlert');
+                    errorBox.innerText = errorMessage;
+                    errorBox.style.display = 'block';
+                } else {
+                    $('#CreateModal').modal('hide');
+                    location.reload();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+</script>
+
+
+
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true" onclick="hideErrorBox()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm" method="post" asp-action="Edit">
+                    <input type="hidden" id="categoryId" name="categoryId" asp-for="CategoryId" />
+                    <div class="form-group">
+                        <label class="control-label">Category Name</label>
+                        <input type="text" class="form-control" id="editCategoryName" name="CategoryName" />
+                    </div>
+                    <div id="editErrorAlert" class="alert alert-danger" role="alert" style="display: none; margin-top: 10px;">
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-md-10 text-right">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #BB3F3F; color: white ;margin-right:-20px" >Close</button>
+                        </div>
+                        <div class="col-md-1 text-left">
+                            <input type="submit" id="editSubmitBtn" value="Save Changes" class="btn btn-primary" />
+                        </div>
+                    </div>
+                    @*<div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #BB3F3F; color: white">Close</button>
+            <input type="submit" id="editSubmitBtn" value="Save Changes" class="btn btn-primary" />
+        </div>*@
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function openEditModal(categoryName, categoryId) {
+        document.getElementById('editCategoryName').value = categoryName;
+        document.getElementById('categoryId').value = categoryId;
+        $('#editCategoryModal').modal('show');
+    }
+
+    document.getElementById('editSubmitBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        var categoryName = document.getElementById('editCategoryName').value;
+        var categoryId = document.getElementById('categoryId').value;
+
+        $.ajax({
+            type: "POST",
+            url: '/ManageCategory/Edit',
+            data: { CategoryId: categoryId, CategoryName: categoryName },
+            success: function (data) {
+                if (data.errorMessage1) {
+                    var errorMessage1 = data.errorMessage1;
+                    var errorBox = document.getElementById('editErrorAlert');
+                    errorBox.innerText = errorMessage1;
+                    errorBox.style.display = 'block';
+                } else {
+                    $('#editCategoryModal').modal('hide');
+                    location.reload();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    function hideErrorBox() {
+        var errorBox1 = document.getElementById('editErrorAlert');
+        var errorBox2 = document.getElementById('addErrorAlert');
+
+
+        errorBox1.style.display = 'none';
+        errorBox2.style.display = 'none';
+
+    }
+</script>

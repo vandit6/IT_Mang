@@ -1,0 +1,217 @@
+﻿@model ITManagement.Models.Users
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+
+    .btn-icon {
+        font-size: 2rem;
+        margin: 4px;
+    }
+
+    .btn {
+        margin: 5px;
+    }
+
+    .head {
+        font-size: 4.5rem;
+        font-weight: 600;
+    }
+
+    .info {
+        font-size: 2rem;
+    }
+
+    .data {
+        font-size: 1.7rem;
+    }
+</style>
+<h1 class=" head text-center">Manage Users</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                <i class="fa fa-user-plus btn-icon"></i> Add User
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr class="info">
+                        <th>User Code</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.user)
+                    {
+                        <tr>
+                            <td class="data">@item.UserId</td>
+                            <td class="data">@item.FullName</td>
+                            <td class="data">@item.Email</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="openEditModal('@item.FullName', '@item.UserId','@item.Email')">
+                                    <i class="fa fa-pencil btn-icon"></i> Edit
+                                </button>
+                                <form method="post" asp-action="DeleteUser" class="deleteCategory" style="display: inline;">
+                                    <input type="hidden" asp-for="UserId" name="deleteUserId" value="@item.UserId" />
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fa fa-trash btn-icon"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if (TempData.ContainsKey("DisplayAlert") && (bool)TempData["DisplayAlert"])
+    {
+        <script>alert('This User is allotted with a device. Delete it from the device and then continue.');</script>
+    }
+</div>
+<form method="post" asp-action="CreateUser" class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" onclick="hideErrorBox()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 class="modal-title" id="exampleModalLabel">Add User</h2>
+            </div>
+            <div class="modal-body">
+                <label class="control-label">User Code</label>
+                <input type="text" placeholder="User ID" style="width:100%; padding:7px; margin-bottom:10px" id="userID" />
+                <label class="control-label">User Name</label>
+                <input type="text" placeholder="User Name" style="width:100%; padding:7px; margin-bottom:10px" id="userName" />
+                <label class="control-label">Email</label>
+                <input type="email" placeholder="Email" style="width:100%; padding:7px; margin-bottom:7px" id="email" />
+                <div id="addErrorAlert" class="alert alert-danger" role="alert" style="display: none; margin-top: 10px;">
+                    <!-- Error message will be displayed here -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:#BB3F3F; color:white">Close</button>
+                <button type="button" class="btn btn-primary" id="addUser">Add</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    document.getElementById('addUser').addEventListener('click', function (event) {
+        var userID = document.getElementById('userID').value;
+        var userName = document.getElementById('userName').value;
+        var email = document.getElementById('email').value;
+
+        $.ajax({
+            type: "POST",
+            url: '/ManageUsers/CreateUser',
+            data: { UserId: userID, FullName: userName, Email: email },
+            success: function (data) {
+                if (data.errorMessage) {
+                    var errorMessage = data.errorMessage;
+                    var errorBox = document.getElementById('addErrorAlert');
+                    errorBox.innerText = errorMessage;
+                    errorBox.style.display = 'block';
+                } else {
+                    $('#exampleModal').modal('hide'); // Close the modal on success
+                    location.reload(); // Refresh the page
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+</script>
+
+<!-- Existing code here... -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true" onclick="hideErrorBox()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 class="modal-title" id="editCategoryModalLabel">Edit User</h2>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm" method="post" asp-action="Edit">
+                    <div class="form-group">
+                        <input type="hidden" asp-for="UserId" class="form-control" id="userId" name="userId" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FullName" class="control-label">User Name</label>
+                        <input type="text" asp-for="FullName" class="form-control" id="edituserName" name="FullName" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label">Email</label>
+                        <input type="email" asp-for="Email" class="form-control" id="editemail" name="Email" />
+                    </div>
+                    <div id="editErrorAlert" class="alert alert-danger" role="alert" style="display: none; margin-top: 10px;">
+                        <!-- Error message will be displayed here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:#BB3F3F; color:white">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="editData()">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function editData() {
+        var userId = document.getElementById('userId').value;
+        var userName = document.getElementById('edituserName').value;
+        var userEmail = document.getElementById('editemail').value;
+
+        $.ajax({
+            type: "POST",
+            url: '/ManageUsers/Edit',
+            data: { userId: userId, fullName: userName, email: userEmail },
+            success: function (data) {
+                if (data.errorMessage) {
+                    var errorMessage = data.errorMessage;
+                    var errorBox = document.getElementById('editErrorAlert');
+                    errorBox.innerText = errorMessage;
+                    errorBox.style.display = 'block';
+                } else { 
+                    $('#editCategoryModal').modal('hide'); // Close the modal on success
+                    location.reload(); // Refresh the page
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+</script>
+
+<script>
+    function openEditModal(userName, userId, userEmail) {
+        document.getElementById('edituserName').value = userName;
+        document.getElementById('userId').value = userId;
+        document.getElementById('editemail').value = userEmail;
+
+        $('#editCategoryModal').modal('show');
+    }
+    function hideErrorBox() {
+        var errorBox1 = document.getElementById('editErrorAlert');
+        var errorBox2 = document.getElementById('addErrorAlert');
+
+
+        errorBox1.style.display = 'none';
+        errorBox2.style.display = 'none';
+
+    }
+</script>
+
+
+

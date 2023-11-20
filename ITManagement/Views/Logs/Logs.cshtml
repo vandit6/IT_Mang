@@ -1,0 +1,169 @@
+﻿<!-- Logs.cshtml -->
+@model ITManagement.ViewModels.LogFilterViewModel
+
+<style>
+    body {
+        background-color: #f0f0f0; /* Light grey background */
+        color: #333; /* Dark grey text */
+        font-family: Arial, sans-serif;
+        margin-top: 3rem;
+    }
+
+    .container {
+        margin: 0 3.5rem; /* Add space on the left */
+    }
+
+    .dashboard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin: 20px;
+    }
+
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    label {
+        margin-right: 10px;
+    }
+
+    select, input {
+        margin-right: 10px;
+    }
+
+    .table-container {
+        margin-top: 20px;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff; /* White table background */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+        padding: 12px;
+        border: 1px solid #ccc;
+    }
+
+    th {
+        background-color: #333; /* Dark grey header background */
+        color: #fff; /* White text */
+    }
+
+    tr:nth-child(even) {
+        background-color: #f5f5f5; /* Light grey alternate row background */
+    }
+
+    tr:hover {
+        background-color: #ddd; /* Grey hover background */
+    }
+</style>
+
+<form method="get" action="@Url.Action("Logs")">
+    <label>Category ID:</label>
+    <select name="categoryId">
+        <option value="">All</option>
+        @foreach (var categoryId in Model.CategoryIds)
+        {
+            <option value="@categoryId">@categoryId</option>
+        }
+    </select>
+
+    <label>Device ID:</label>
+    <select name="deviceId">
+        <option value="">All</option>
+        @foreach (var deviceId in Model.DeviceIds)
+        {
+            <option value="@deviceId">@deviceId</option>
+        }
+    </select>
+
+    <label>User ID:</label>
+    <select name="userId">
+        <option value="">All</option>
+        @foreach (var userId in Model.UserIds)
+        {
+            <option value="@userId">@userId</option>
+        }
+    </select>
+
+    <label>Device Name:</label>
+    <select name="deviceName">
+        <option value="">All</option>
+        @foreach (var deviceName in Model.DeviceNames)
+        {
+            <option value="@deviceName">@deviceName</option>
+        }
+    </select>
+
+    <label>Is Archived:</label>
+    <select name="isArchived">
+        <option value="">All</option>
+        @foreach (var isArchivedOption in Model.IsArchivedOptions)
+        {
+            <option value="@isArchivedOption.ToString()">@isArchivedOption</option>
+        }
+    </select>
+
+    <label>Change Date:</label>
+    <input type="date" name="changeDate" value="@Model.ChangeDate?.ToString("yyyy-MM-dd")">
+
+    <button type="submit">Apply Filters</button>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Log ID</th>
+            <th>Change Type</th>
+            <th>Change Date</th>
+            <th>Device ID</th>
+            <th>Category ID</th>
+            <th>User ID</th>
+            <th>Device Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Alloted Date</th>
+            <th>Created By</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Updated By</th>
+            <th>Is Archived</th>
+            <th>Action</th>
+            <th>Timestamp</th>
+            <!-- Add other columns as needed -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model.Logs)
+        {
+            <tr>
+                <td>@log.LogId</td>
+                <td>@log.ChangeType</td>
+                <td>@log.ChangeDate?.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@log.DeviceId</td>
+                <td>@log.CategoryId</td>
+                <td>@log.UserId</td>
+                <td>@log.DeviceName</td>
+                <td>@log.Description</td>
+                <td>@log.Status</td>
+                <td>@log.AllotedDate</td>
+                <td>@log.CreatedBy</td>
+                <td>@log.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@log.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@log.UpdatedBy</td>
+                <td>@log.IsArchived</td>
+                <td>@log.Action</td>
+                <td>@log.Timestamp?.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <!-- Add other columns as needed -->
+            </tr>
+        }
+    </tbody>
+</table>
