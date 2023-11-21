@@ -1,166 +1,308 @@
-﻿<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+﻿
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @model ITManagement.ViewModels.DashboardViewModel
-<style>
-    .dashboard {
-        display: flex;
-        flex-direction: row; /* Change to row to have two columns */
-        align-items: flex-start;
-        justify-content: space-between;
-        margin: 10px;
-        height: 85vh; /* Set height to 85% of viewport height */
-    }
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example of Bootstrap 3 Two Column Grid Layouts for Tablets and Desktops</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <style>
+        .demo-content {
+            padding: 15px;
+            font-size: 18px;
+            background: rgba(75, 192, 192, 0.2); /* Match the first dataset color */
+            margin-bottom: 10px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-family:cursive;
+        }
 
-    .left-column {
-        width: 30%; /* 30% width for the left column */
-        display: flex;
-        flex-direction: column;
-        height: 100%; /* Full height of the container */
-    }
+            .demo-content.bg-alt {
+                background: rgba(255, 99, 132, 0.2); /* Match the second dataset color */
+            }
 
-    .right-column {
-        width: 70%; /* 70% width for the right column */
-        height: 70%; /* Full height of the container */
-    }
+            .demo-content p {
+                font-size: 50px;
+                text-align: center;
+            }
 
-    .row {
-        display: flex;
-        justify-content: center;
-        margin: 10px;
-    }
 
-    .box {
-        flex: 1;
-        padding: 15px;
-        background-color: #f5f5f5;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
+        /*.demo-content {
+            padding: 15px;
+            font-size: 18px;
+            background: #dbdfe5;
+            margin-bottom: 10px;
+            border-radius:4px;
+            text-align:center;
+        }
 
-    .box h2 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
+            .demo-content.bg-alt {
+                background: #EEEEEE;
+            }
 
-    .box p {
-        font-size: 3rem;
-        font-weight: 500;
-    }
+            .demo-content p{
+                font-size:50px;
+                text-align:center;
+            }*/
 
-    .graphs {
-        padding: 20px;
-        background-color: #f5f5f5;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        height: 68%; /* 50% of the container height */
-    }
+       
 
-    table {
-        width: 100%;
-        height: 50%; /* 50% of the container height */
-    }
-</style>
+       
+        .graphs {
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 50vh;
+        }
 
-<div class="dashboard">
-    <!-- Left Column: Parameters -->
-    <div class="left-column">
-        <div class="row">
-            <div class="box">
+
+
+        .table {
+            box-sizing: border-box;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+            .table th,
+            .table td {
+                font-size: 14px;
+            }
+
+            .table th {
+                background-color: #ddd;
+                font-size: 16px;
+            }
+        @@media screen and (max-width: 480px) {
+            .table th,
+            .table td {
+                padding: 2px;
+                font-size: 5px !important;
+            }
+            .table th {
+                background-color: #ddd;
+                font-size: 5px !important;
+            }
+            .table-box {
+                padding: 10px 10px 0px 10px !important;
+              height:60vh !important;
+                overflow-y: scroll;
+            }
+           
+            canvas{
+                height:100%;
+            }
+
+           
+        }
+
+        body {
+            margin-top:2%;
+        }
+
+        .card-box {
+            padding: 20px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom:2%;
+        }
+
+        .table-box {
+            box-sizing: border-box;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 50vh;
+            overflow-y:scroll;
+        }
+        
+    </style>
+
+</head>
+
+
+
+<!-- Left Column: Parameters -->
+
+<div class="container card-box">
+    <div class="row">
+        <div class="col-md-4 demo">
+            <div class="demo-content">
                 <h2>Total Assets</h2>
+
                 <p>@Model.NumberOfDevices</p>
             </div>
         </div>
-        <div class="row">
-            <div class="box">
+
+        <div class="col-md-4 demo">
+            <div class="demo-content">
                 <h2>Total Users</h2>
+
                 <p>@Model.NumberOfUsers</p>
             </div>
         </div>
-        <div class="row">
-            <div class="box">
+
+        <div class="col-md-4 demo">
+            <div class="demo-content">
                 <h2>Total Allotted Devices</h2>
+
                 <p>@Model.NumberOfAllottedDevices</p>
             </div>
         </div>
-    </div>
 
-    <!-- Right Column: Graphs and Logs Table -->
-    <div class="right-column">
-        <!-- Bar Chart -->
-        <div class="graphs">
-            <canvas id="barChart" width="1500" height="500"></canvas>
-        </div>
-
-        <!-- Pie Chart -->
-        <div class="graph">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Log ID</th>
-                        <th>Change Type</th>
-                        <th>Device ID</th>
-                        <th>Category Name</th>
-                        <th>User ID</th>
-                        <th>Device Name</th>
-                        <th>Description</th>
-                        <th>Alloted Date</th>
-                        <th>Timestamp</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var log in Model.DeviceLogs)
-                    {
-                    <tr>
-                        <td>@log.LogId</td>
-                        <td>@log.ChangeType</td>
-                        <td>@log.DeviceId</td>
-                        <td>@log.CategoryName</td>
-                        <td>@log.UserId</td>
-                        <td>@log.DeviceName</td>
-                        <td>@log.Description</td>
-                        <td>@log.AllotedDate</td>
-                        <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
     </div>
 </div>
 
+
+<!-- Right Column: Graphs and Logs Table -->
+<div class="container ">
+
+    <div class="row">
+        <div class="col-md-6">
+
+
+            <div class="graphs">
+
+                <canvas id="barChart" ></canvas>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="graph table-box">
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+
+                           
+
+                            <th>Change Type</th>
+
+
+
+                            <th>Category Name</th>
+
+                            <th>User ID</th>
+
+                            <th>Device Name</th>
+
+                           
+
+                            <th>Alloted Date</th>
+
+                            <th>Timestamp</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var log in Model.DeviceLogs)
+
+                        {
+
+                            <tr>
+
+                            
+
+                                <td>@log.ChangeType</td>
+
+                              
+
+                                <td>@log.CategoryName</td>
+
+                                <td>@log.UserId</td>
+
+                                <td>@log.DeviceName</td>
+
+                               
+                                <td>@log.AllotedDate</td>
+
+                                <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+    </div>
+
 <script>
+
     var barChartData = {
+
         labels: @Html.Raw(Json.Serialize(Model.BarChartData.Select(c => c.Category))),
+
         datasets: [{
+
             label: 'Number of Devices',
+
             data: @Html.Raw(Json.Serialize(Model.BarChartData.Select(c => c.NumberOfUsers))),
+
             backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
+
             borderColor: 'rgba(75, 192, 192, 1)', // Border color
+
             borderWidth: 1
+
         }, { label: 'Number of Allocated Devices', // Updated label
+
             data: @Html.Raw(Json.Serialize(Model.BarChartData.Select(c => c.NumberOfAllottedDevices))), // Adjusted data property
+
                 backgroundColor: 'rgba(255, 99, 132, 0.2', // Light pink color
+
                 borderColor: 'rgba(255, 99, 132, 1)', // Border color
+
             borderWidth: 1}]
+
     };
 
     var ctx = document.getElementById('barChart').getContext('2d');
+
     var myBarChart = new Chart(ctx, {
+
         type: 'bar',
+
         data: barChartData,
+
         options: {
+
             scales: {
+
                 y: {
+
                     beginAtZero: true
+
                 }
+
             }
+
         }
+
     });
 
 </script>
